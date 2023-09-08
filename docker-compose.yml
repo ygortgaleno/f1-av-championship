@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  # f1-va-championship:
+  #   build: .
+  #   ports:
+  #   - 3000:3000
+  #   volumes:
+  #     - ./src:/usr/f1-va-championship/src
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_management
+    ports: 
+      - 5672:5672
+      - 15672:15672
+    
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq/
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+
+  localstack:
+    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
+    image: localstack/localstack
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+    environment:
+      - DEBUG=${DEBUG-}
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "localstack:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+volumes:
+  rabbitmq: {}
+  localstack: {}
